@@ -13,11 +13,16 @@ type URLsh struct {
 	short    string
 }
 
-var urls []URLsh
+var urls []string
 
 // SaveLink saves a, generated or provided, short URL
-func SaveLink(link string) bool {
-	return true
+func SaveLink(link string) error {
+	if contains(urls, link) {
+		return fmt.Errorf("same shortened link has already been generated")
+	}
+
+	urls = append(urls, link)
+	return nil
 }
 
 // Utility function to check if a string elements is in a string slice
@@ -90,6 +95,7 @@ func GenerateShort(link string) (s string, err error) {
 	case count > 30:
 		s = w[:30]
 	}
+	err = SaveLink(s)
 
 	return
 }
@@ -123,6 +129,6 @@ func main() {
 
 	urlsh := URLsh{original: sanitizeURL(url), short: shURL}
 
-	// Serve
+	// Run redirect server
 	RedirectToLongURL(urlsh)
 }
