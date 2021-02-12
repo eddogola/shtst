@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -39,6 +40,21 @@ func remove(words []string, word string) []string {
 	}
 
 	return words
+}
+
+// Utility function to add the protocol part(e.g. http/ https) to the link if absent
+func sanitizeURL(link string) string {
+	url, err := url.Parse(link)
+	if err != nil {
+		log.Fatalf("Failed to parse provided link to *url.URL object: %v", err)
+	}
+	protocol := url.Scheme
+	if protocol == "" {
+		prefix := "http://"
+		link = prefix + link
+	}
+
+	return link
 }
 
 // GenerateShort takes an original URL and randomly generates a shorter URL, under 30 characters, or an error is raised
@@ -78,6 +94,17 @@ func GenerateShort(link string) (s string, err error) {
 	return
 }
 
+// Takes in a URLsh instance to handle the short url server route and redirect to the long url
+func RedirectToLongURL(urlsh URLsh) {
+	handler := http.RedirectHandler(urlsh.original, http.StatusFound)
+
+	pattern := fmt.Sprintf("/%s", urlsh.short)
+	http.Handle(pattern, handler)
+
+	fmt.Printf("Listening on localhost:5000%s\n", pattern)
+	http.ListenAndServe(":5000", handler)
+}
+
 func main() {
 	fmt.Println("Enter the link to the site whose URL you want to shorten")
 
@@ -94,8 +121,8 @@ func main() {
 		fmt.Scan(&shURL)
 	}
 
-	urlsh := URLsh{original: url, short: shURL}
+	urlsh := URLsh{original: sanitizeURL(url), short: shURL}
 
-	fmt.Println(urlsh)
-
+	// Serve
+	RedirectToLongURL(urlsh)
 }
