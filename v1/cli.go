@@ -9,7 +9,7 @@ import (
 
 type URLsh struct {
 	original string
-	short string
+	short    string
 }
 
 var urls []URLsh
@@ -26,7 +26,7 @@ func contains(words []string, word string) bool {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -41,7 +41,7 @@ func remove(words []string, word string) []string {
 	return words
 }
 
-// GenerateShort takes an original URL and randomly generates a shorter URL, under 30 characters, or an error is raised 
+// GenerateShort takes an original URL and randomly generates a shorter URL, under 30 characters, or an error is raised
 func GenerateShort(link string) (s string, err error) {
 	// Parse url
 	u, err := url.Parse(link)
@@ -62,7 +62,7 @@ func GenerateShort(link string) (s string, err error) {
 	for _, word := range words {
 		w += word
 	}
-	
+
 	// Get shortened URL depending on length of string w
 	switch count := len(w); {
 	case count < 10:
@@ -97,5 +97,5 @@ func main() {
 	urlsh := URLsh{original: url, short: shURL}
 
 	fmt.Println(urlsh)
-	
+
 }
