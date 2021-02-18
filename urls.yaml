@@ -1,0 +1,4 @@
+- path: "/instagram"
+  url: "https://instagram.com"
+- path: "/goodreads"
+  url: "https://goodreads.com"
